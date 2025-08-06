@@ -1,4 +1,5 @@
 import requests
+from stock_data import stock_data
 
 
 STOCK_NAME = "TSLA"
@@ -6,6 +7,10 @@ COMPANY_NAME = "Tesla Inc"
 
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+
+STOCK_API_KEY = "VAOD2LDJNEYUQPCZ"
+
+PERCENT_TRESHOLD = 2
 
     ## STEP 1: Use https://www.alphavantage.co/documentation/#daily
 # When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
@@ -47,4 +52,34 @@ or
 Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
 Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
 """
+
+
+# API CALL
+
+parameters = {
+    "function": "TIME_SERIES_DAILY",
+    "symbol": STOCK_NAME,
+    "apikey": STOCK_API_KEY,
+}
+
+response = requests.get(STOCK_ENDPOINT, parameters)
+response.raise_for_status()
+
+# stock_data = response.json()  # odkpomentovat, aby se data načítala z AP
+
+data = stock_data["Time Series (Daily)"]
+keys = list([keys for keys, values in data.items()])
+
+# data[0] = yesterday, data[1] = day before
+data = [data[keys[0]], data[keys[1]]]
+
+for day in data:
+    day["close"] = day.pop("4. close")  # přejmenuj 4. close na close
+    day["close"] = float(day["close"])
+
+
+diff = abs(data[0]["close"] - data[1]["close"])
+percent_change = (diff / data[1]["close"]) * 100
+print(f"change: {percent_change:.2f}%")
+
 
