@@ -1,5 +1,6 @@
 import requests
 from stock_data import stock_data
+from news_data import news_data
 
 
 STOCK_NAME = "TSLA"
@@ -9,6 +10,7 @@ STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 
 STOCK_API_KEY = "VAOD2LDJNEYUQPCZ"
+NEWS_API_KEY = "2f8f5570b3f44a4996000599135a4efb"
 
 PERCENT_TRESHOLD = 2
 
@@ -56,14 +58,14 @@ Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and 
 
 # API CALL
 
-parameters = {
+stock_parameters = {
     "function": "TIME_SERIES_DAILY",
     "symbol": STOCK_NAME,
     "apikey": STOCK_API_KEY,
 }
 
-response = requests.get(STOCK_ENDPOINT, parameters)
-response.raise_for_status()
+# response = requests.get(STOCK_ENDPOINT, stock_parameters)
+# response.raise_for_status()
 
 # stock_data = response.json()  # odkpomentovat, aby se data načítala z AP
 
@@ -78,8 +80,32 @@ for day in data:
     day["close"] = float(day["close"])
 
 
-diff = abs(data[0]["close"] - data[1]["close"])
+diff = data[0]["close"] - data[1]["close"]
 percent_change = (diff / data[1]["close"]) * 100
 print(f"change: {percent_change:.2f}%")
 
+if percent_change > PERCENT_TRESHOLD:
+    print("GET NEWS.")
+
+
+# NEWS API CALL
+
+news_parameters = {
+    "q": COMPANY_NAME,
+    "from": keys[1],
+    "sortby": "popularity",
+    "apikey": NEWS_API_KEY
+}
+
+# response = requests.get(NEWS_ENDPOINT, news_parameters)
+# response.raise_for_status()
+# news_data = response.json()
+
+articles = news_data["articles"][:3]
+if percent_change > 0:
+    sign = "🔺"
+else:
+    sign = "🔻"
+
+final_articles = [f"{STOCK_NAME}: {sign}{percent_change:.2f}\nHeadline: {n["author"]}\nBrief: {n["title"]}" for n in articles]
 
