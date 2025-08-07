@@ -4,6 +4,11 @@ from news_data import news_data
 import smtplib
 from email.message import EmailMessage
 
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 STOCK_NAME = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -16,9 +21,9 @@ NEWS_API_KEY = "2f8f5570b3f44a4996000599135a4efb"
 
 PERCENT_TRESHOLD = 2
 
-my_email = "py_test@seznam.cz"
-my_password = "jjz!AtuDYiN#46@"
-smtpserver = "smtp.seznam.cz"
+my_email = os.getenv("SMTP_USERNAME")
+my_password = os.getenv("SMTP_PASSWORD")
+smtpserver = os.getenv("SMTP_SERVER")
 
 # API CALL
 
