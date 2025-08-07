@@ -81,7 +81,7 @@ if percent_change > 0:
 else:
     sign = "🔻"
 
-final_articles = [f"{STOCK_NAME}: {sign}{percent_change:.2f}\nHeadline: {n["author"]}\nBrief: {n["title"]}" for n in articles]
+final_articles = [f"{STOCK_NAME}: {sign}{percent_change:.2f}\nHeadline: {n["title"]}\nBrief: {n["description"]}" for n in articles]
 
 
 # email
