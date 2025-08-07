@@ -6,6 +6,7 @@ from email.message import EmailMessage
 
 import os
 from dotenv import load_dotenv
+import sys
 
 
 load_dotenv()
@@ -39,10 +40,14 @@ stock_parameters = {
 # stock_data = response.json()  # odkpomentovat, aby se data načítala z AP
 
 data = stock_data["Time Series (Daily)"]
-keys = list([keys for keys, values in data.items()])
+yesterday_date = list(data.keys())[1]
+
+data_values = list([values for keys, values in data.items()])
+
+
 
 # data[0] = yesterday, data[1] = day before
-data = [data[keys[0]], data[keys[1]]]
+data = [data_values[0], data_values[1]]
 
 for day in data:
     day["close"] = day.pop("4. close")  # přejmenuj 4. close na close
@@ -61,7 +66,7 @@ if percent_change > PERCENT_TRESHOLD:
 
 news_parameters = {
     "q": COMPANY_NAME,
-    "from": keys[1],
+    "from": yesterday_date,
     "sortby": "popularity",
     "apikey": NEWS_API_KEY
 }
